@@ -4,8 +4,9 @@
  * Description: Server-side AI bot detection for WordPress. Tracks AI bot visits via xSeek’s API (bots don’t execute JavaScript).
  * Version:     1.0.0
  * Author:      xSeek
- * License:     GPL-2.0-or-later
+ * License:     MIT
  * Text Domain: xseek-ai-bot-tracking
+ * Requires PHP: 7.0
  *
  * Docs: https://www.xseek.io/integrations/api
  */
