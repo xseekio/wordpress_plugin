@@ -30,7 +30,7 @@ Most AI bots fetch HTML but do not execute JavaScript, so client-side tracking m
 
 Bot patterns are based on xSeek’s bot database (see docs).
 
-Docs: https://www.xseek.io/integrations/api
+Docs: xSeek docs: https://www.xseek.io/integrations/wordpress
 
 == Installation ==
 1. Upload `xseek-ai-bot-tracking.zip`

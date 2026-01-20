@@ -2,7 +2,7 @@
 
 Server-side AI bot detection for WordPress. Tracks AI bot visits via xSeek’s API (AI bots typically don’t execute JavaScript).
 
-- **xSeek docs**: https://www.xseek.io/integrations/api
+- **xSeek docs**: xSeek docs: https://www.xseek.io/integrations/wordpress
 
 ## What it does
 
@@ -64,5 +64,6 @@ If you enable “Include IP address”, the plugin uses `X-Forwarded-For` (left-
 ## License
 
 MIT — see `LICENSE`.
+
 
 

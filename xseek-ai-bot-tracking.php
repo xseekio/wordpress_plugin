@@ -8,7 +8,7 @@
  * Text Domain: xseek-ai-bot-tracking
  * Requires PHP: 7.0
  *
- * Docs: https://www.xseek.io/integrations/api
+ * Docs: xSeek docs: https://www.xseek.io/integrations/wordpress
  */
  
 if (!defined('ABSPATH')) exit;
@@ -89,7 +89,7 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
         add_settings_section('xseek_main', __('xSeek API Settings', 'xseek-ai-bot-tracking'), function () {
             echo '<p>'.esc_html__('Detect AI bots server-side and send a tracking event to xSeek.', 'xseek-ai-bot-tracking').'</p>';
-            echo '<p><a href="'.esc_url('https://www.xseek.io/integrations/api').'" target="_blank" rel="noopener noreferrer">'.esc_html__('View API integration docs', 'xseek-ai-bot-tracking').'</a></p>';
+            echo '<p><a href="'.esc_url('xSeek docs: https://www.xseek.io/integrations/wordpress').'" target="_blank" rel="noopener noreferrer">'.esc_html__('View API integration docs', 'xseek-ai-bot-tracking').'</a></p>';
         }, 'xseek-ai-bot-tracking');
 
         $fields = [
