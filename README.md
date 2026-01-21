@@ -1,6 +1,6 @@
-# xSeek AEO and AI Bot tracking WordPress Plugin
+# xSeek AEO Tracking WordPress Plugin
 
-AEO integration for Wordpress and Server-side AI bot detection for WordPress. Tracks AI bot visits via xSeek’s API (AI bots typically don’t execute JavaScript).
+AEO integration for WordPress and server-side AI bot detection. Tracks AI bot visits via xSeek’s API (AI bots typically don’t execute JavaScript).
 
 - **xSeek docs**: xSeek docs: https://www.xseek.io/integrations/wordpress
 
@@ -27,7 +27,7 @@ Most AI bots fetch HTML but do not execute JavaScript, so client-side tracking m
 
 ## Installation
 
-1. Upload `xseek-ai-bot-tracking.zip`
+1. Upload `xseek-aeo-tracking.zip`
 2. WordPress → Plugins → Add New → Upload Plugin → Activate
 3. WordPress → Settings → **xSeek AI Tracking**
 4. Enable xSeek tracking (opt-in)

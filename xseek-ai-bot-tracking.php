@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: xSeek AI Bot Tracking
+ * Plugin Name: xSeek AEO Tracking
  * Description: Server-side AI bot detection for WordPress. Tracks AI bot visits via xSeek’s API (bots don’t execute JavaScript).
  * Version:     1.0.0
  * Author:      xSeek
  * License:     MIT
- * Text Domain: xseek-ai-bot-tracking
+ * Text Domain: xseek-aeo-tracking
  * Requires PHP: 7.0
  *
  * Docs: xSeek docs: https://www.xseek.io/integrations/wordpress
@@ -47,7 +47,7 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
             'enabled'         => 0,        // opt-in OFF by default
             'api_key_enc'     => '',       // encrypted API key blob (or empty)
             'website_id'      => '',
-            'include_ip'      => 0,
+            'include_ip'      => 1,
             'include_referer' => 1,
             'sample_rate'     => 1.0,
             'exclude_regex'   => '#\.(?:css|js|png|jpg|jpeg|gif|webp|svg|ico|woff2?|ttf|eot)$#i',
@@ -70,8 +70,8 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
     /** ── Admin UI ───────────────────────────────────────────────── */
     public function admin_menu() {
         add_options_page(
-            __('xSeek AI Bot Tracking', 'xseek-ai-bot-tracking'),
-            __('xSeek AI Tracking', 'xseek-ai-bot-tracking'),
+            __('xSeek AEO Tracking', 'xseek-aeo-tracking'),
+            __('xSeek AEO', 'xseek-aeo-tracking'),
             'manage_options',
             'xseek-ai-bot-tracking',
             [$this, 'render_settings']
@@ -80,26 +80,26 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
     public function settings_link($links) {
         $url = admin_url('options-general.php?page=xseek-ai-bot-tracking');
-        $links[] = '<a href="'.esc_url($url).'">'.esc_html__('Settings', 'xseek-ai-bot-tracking').'</a>';
+        $links[] = '<a href="'.esc_url($url).'">'.esc_html__('Settings', 'xseek-aeo-tracking').'</a>';
         return $links;
     }
 
     public function register_settings() {
         register_setting('xseek_ai_bot_tracking_group', self::OPT, [$this, 'sanitize']);
 
-        add_settings_section('xseek_main', __('xSeek API Settings', 'xseek-ai-bot-tracking'), function () {
-            echo '<p>'.esc_html__('Detect AI bots server-side and send a tracking event to xSeek.', 'xseek-ai-bot-tracking').'</p>';
-            echo '<p><a href="'.esc_url('xSeek docs: https://www.xseek.io/integrations/wordpress').'" target="_blank" rel="noopener noreferrer">'.esc_html__('View API integration docs', 'xseek-ai-bot-tracking').'</a></p>';
+        add_settings_section('xseek_main', __('xSeek API Settings', 'xseek-aeo-tracking'), function () {
+            echo '<p>'.esc_html__('Detect AI bots server-side and send a tracking event to xSeek.', 'xseek-aeo-tracking').'</p>';
+            echo '<p><a href="'.esc_url('xSeek docs: https://www.xseek.io/integrations/wordpress').'" target="_blank" rel="noopener noreferrer">'.esc_html__('View API integration docs', 'xseek-aeo-tracking').'</a></p>';
         }, 'xseek-ai-bot-tracking');
 
         $fields = [
-            ['enabled',         __('Enable xSeek tracking (opt-in)', 'xseek-ai-bot-tracking'), 'checkbox'],
-            ['website_id',      __('xSeek Website ID', 'xseek-ai-bot-tracking'), 'text'],
-            ['api_key',         __('xSeek API Key', 'xseek-ai-bot-tracking'), 'password'],
-            ['include_ip',      __('Include IP address (optional)', 'xseek-ai-bot-tracking'), 'checkbox'],
-            ['include_referer', __('Include Referer header (optional)', 'xseek-ai-bot-tracking'), 'checkbox'],
-            ['sample_rate',     __('Sample rate (0.0–1.0)', 'xseek-ai-bot-tracking'), 'number'],
-            ['exclude_regex',   __('Exclude paths (regex)', 'xseek-ai-bot-tracking'), 'text'],
+            ['enabled',         __('Enable xSeek tracking (opt-in)', 'xseek-aeo-tracking'), 'checkbox'],
+            ['website_id',      __('xSeek Website ID', 'xseek-aeo-tracking'), 'text'],
+            ['api_key',         __('xSeek API Key', 'xseek-aeo-tracking'), 'password'],
+            ['include_ip',      __('Include IP address (optional)', 'xseek-aeo-tracking'), 'checkbox'],
+            ['include_referer', __('Include Referer header (optional)', 'xseek-aeo-tracking'), 'checkbox'],
+            ['sample_rate',     __('Sample rate (0.0–1.0)', 'xseek-aeo-tracking'), 'number'],
+            ['exclude_regex',   __('Exclude paths (regex)', 'xseek-aeo-tracking'), 'text'],
         ];
 
         foreach ($fields as $f) {
@@ -141,37 +141,38 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
     public function field($args) {
         $opts = get_option(self::OPT, []);
-        $k = esc_attr($args['key']);
+        $key = isset($args['key']) ? (string) $args['key'] : '';
         $t = $args['type'];
+        $name = self::OPT . '[' . $key . ']';
 
         if ($t === 'checkbox') {
-            $v = !empty($opts[$k]) ? 1 : 0;
-            echo '<label><input type="checkbox" name="'.self::OPT.'['.$k.']" value="1" '.checked($v, 1, false).'> '.__('Enable', 'xseek-ai-bot-tracking').'</label>';
+            $v = !empty($opts[$key]) ? 1 : 0;
+            echo '<label><input type="checkbox" name="' . esc_attr($name) . '" value="1" ' . checked($v, 1, false) . '> ' . esc_html__('Enable', 'xseek-aeo-tracking') . '</label>';
             return;
         }
 
         if ($t === 'number') {
-            $v = isset($opts[$k]) ? $opts[$k] : '';
-            echo '<input type="number" step="0.01" min="0" max="1" name="'.self::OPT.'['.$k.']" value="'.esc_attr($v).'">';
+            $v = isset($opts[$key]) ? $opts[$key] : '';
+            echo '<input type="number" step="0.01" min="0" max="1" name="' . esc_attr($name) . '" value="' . esc_attr($v) . '">';
             return;
         }
 
-        if ($t === 'password' && $k === 'api_key') {
+        if ($t === 'password' && $key === 'api_key') {
             // Never echo the key back. Show a placeholder indicating one is stored.
-            $placeholder = (!empty($opts['api_key_enc'])) ? __('(stored — type to replace)', 'xseek-ai-bot-tracking') : '';
-            echo '<input type="password" class="regular-text" name="'.self::OPT.'[api_key]" value="" placeholder="'.esc_attr($placeholder).'" autocomplete="new-password">';
-            echo '<p class="description">'.esc_html__('Type to set and leave blank to keep the existing value.', 'xseek-ai-bot-tracking').'</p>';
+            $placeholder = (!empty($opts['api_key_enc'])) ? __('(stored — type to replace)', 'xseek-aeo-tracking') : '';
+            echo '<input type="password" class="regular-text" name="' . esc_attr(self::OPT . '[api_key]') . '" value="" placeholder="' . esc_attr($placeholder) . '" autocomplete="new-password">';
+            echo '<p class="description">'.esc_html__('Type to set and leave blank to keep the existing value.', 'xseek-aeo-tracking').'</p>';
             return;
         }
 
-        $v = isset($opts[$k]) ? $opts[$k] : '';
-        echo '<input type="text" class="regular-text" name="'.self::OPT.'['.$k.']" value="'.esc_attr($v).'">';
+        $v = isset($opts[$key]) ? $opts[$key] : '';
+        echo '<input type="text" class="regular-text" name="' . esc_attr($name) . '" value="' . esc_attr($v) . '">';
     }
 
     public function render_settings() {
         if (!current_user_can('manage_options')) return;
 
-        echo '<div class="wrap"><h1>xSeek AI Bot Tracking</h1>';
+        echo '<div class="wrap"><h1>xSeek AEO Tracking</h1>';
         echo '<form method="post" action="options.php">';
         settings_fields('xseek_ai_bot_tracking_group');
         do_settings_sections('xseek-ai-bot-tracking');
@@ -181,26 +182,29 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
         $opts = get_option(self::OPT, []);
         $has_config = (!empty($opts['enabled']) && !empty($opts['website_id']) && !empty($opts['api_key_enc']));
         if ($has_config) {
-            echo '<hr><h2>'.esc_html__('Health Check', 'xseek-ai-bot-tracking').'</h2>';
-            echo '<p>'.esc_html__('API Endpoint:', 'xseek-ai-bot-tracking').' <code>'.esc_html(self::API_ENDPOINT).'</code></p>';
-            echo '<p>'.esc_html__('Website ID:', 'xseek-ai-bot-tracking').' <code>'.esc_html($opts['website_id']).'</code></p>';
+            echo '<hr><h2>'.esc_html__('Health Check', 'xseek-aeo-tracking').'</h2>';
+            echo '<p>'.esc_html__('API Endpoint:', 'xseek-aeo-tracking').' <code>'.esc_html(self::API_ENDPOINT).'</code></p>';
+            echo '<p>'.esc_html__('Website ID:', 'xseek-aeo-tracking').' <code>'.esc_html($opts['website_id']).'</code></p>';
             echo '<form method="post" action="'.esc_url(admin_url('admin-post.php')).'">';
             wp_nonce_field('xseek_test');
             echo '<input type="hidden" name="action" value="xseek_send_test">';
-            submit_button(__('Send Test Event', 'xseek-ai-bot-tracking'), 'secondary');
+            submit_button(__('Send Test Event', 'xseek-aeo-tracking'), 'secondary');
             echo '</form>';
         }
 
-        if (!empty($_GET['xseek_test'])) {
-            $val = sanitize_text_field(wp_unslash($_GET['xseek_test']));
-            if ($val === 'success') {
-                echo '<div class="notice notice-success"><p>'.esc_html__('Test event sent successfully.', 'xseek-ai-bot-tracking').'</p></div>';
-            } elseif ($val === 'error') {
-                echo '<div class="notice notice-error"><p>'.esc_html__('Test event failed. Check your API key and Website ID.', 'xseek-ai-bot-tracking').'</p></div>';
+        if (!empty($_GET['xseek_test']) && !empty($_GET['xseek_nonce'])) {
+            $nonce = sanitize_text_field(wp_unslash($_GET['xseek_nonce']));
+            if (wp_verify_nonce($nonce, 'xseek_test_result')) {
+                $val = sanitize_text_field(wp_unslash($_GET['xseek_test']));
+                if ($val === 'success') {
+                    echo '<div class="notice notice-success"><p>'.esc_html__('Test event sent successfully.', 'xseek-aeo-tracking').'</p></div>';
+                } elseif ($val === 'error') {
+                    echo '<div class="notice notice-error"><p>'.esc_html__('Test event failed. Check your API key and Website ID.', 'xseek-aeo-tracking').'</p></div>';
+                }
             }
         }
 
-        echo '<hr><p><em>'.esc_html__('Privacy:', 'xseek-ai-bot-tracking').'</em> '.esc_html__('Disabled by default. When enabled, this detects AI bots via User-Agent and sends botName, userAgent, url, websiteId, and optional ip/referer to xSeek.', 'xseek-ai-bot-tracking').'</p>';
+        echo '<hr><p><em>'.esc_html__('Privacy:', 'xseek-aeo-tracking').'</em> '.esc_html__('Disabled by default. When enabled, this detects AI bots via User-Agent and sends botName, userAgent, url, websiteId, and optional ip/referer to xSeek.', 'xseek-aeo-tracking').'</p>';
         echo '</div>';
     }
 
@@ -305,12 +309,16 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
             wp_die('Forbidden', 403);
         }
 
+        $result_nonce = wp_create_nonce('xseek_test_result');
         $opts = get_option(self::OPT, []);
         $api_key = $this->decrypt_api_key($opts['api_key_enc'] ?? '');
         $website_id = $opts['website_id'] ?? '';
 
         if (empty($opts['enabled']) || $api_key === '' || $website_id === '') {
-            wp_safe_redirect(add_query_arg('xseek_test', 'error', admin_url('options-general.php?page=xseek-ai-bot-tracking')));
+            wp_safe_redirect(add_query_arg([
+                'xseek_test'  => 'error',
+                'xseek_nonce' => $result_nonce,
+            ], admin_url('options-general.php?page=xseek-ai-bot-tracking')));
             exit;
         }
 
@@ -322,7 +330,10 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
         ];
 
         $ok = $this->send_http_blocking($payload, $api_key);
-        wp_safe_redirect(add_query_arg('xseek_test', $ok ? 'success' : 'error', admin_url('options-general.php?page=xseek-ai-bot-tracking')));
+        wp_safe_redirect(add_query_arg([
+            'xseek_test'  => $ok ? 'success' : 'error',
+            'xseek_nonce' => $result_nonce,
+        ], admin_url('options-general.php?page=xseek-ai-bot-tracking')));
         exit;
     }
 
@@ -342,14 +353,19 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
         // Sampling (optional)
         $sample = isset($opts['sample_rate']) ? (float)$opts['sample_rate'] : 1.0;
-        if ($sample < 1.0 && mt_rand() / mt_getrandmax() > $sample) return;
+        if ($sample <= 0.0) return;
+        if ($sample < 1.0) {
+            $scale = 1000000;
+            $threshold = (int) round($sample * $scale);
+            if (wp_rand(1, $scale) > $threshold) return;
+        }
 
         // Exclusions (skip static assets)
         $exclude = $opts['exclude_regex'] ?? '';
-        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        $uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
         if ($exclude && @preg_match($exclude, $uri)) return;
 
-        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        $ua = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
         $bot_name = $this->detect_bot_name($ua);
         if (!$bot_name) return;
 
@@ -361,7 +377,8 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
         // Prefer home_url() host; fallback to HTTP_HOST
         $home = home_url();
         $parts = wp_parse_url($home);
-        return $parts['host'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+        if (!empty($parts['host'])) return $parts['host'];
+        return isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
     }
 
     private function full_url_for_path($path) {
@@ -372,15 +389,17 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
     private function client_ip() {
         if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $leftMost = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
-            return trim($leftMost);
+            $xff = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
+            $leftMost = trim(explode(',', $xff)[0]);
+            return (filter_var($leftMost, FILTER_VALIDATE_IP)) ? $leftMost : '';
         }
-        return $_SERVER['REMOTE_ADDR'] ?? '';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+        return (filter_var($ip, FILTER_VALIDATE_IP)) ? $ip : '';
     }
 
     private function build_xseek_payload($bot_name, $user_agent) {
         $opts = get_option(self::OPT, []);
-        $path = $_SERVER['REQUEST_URI'] ?? '/';
+        $path = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
         $url = $this->full_url_for_path($path);
 
         $payload = [
@@ -396,7 +415,7 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
         }
 
         if (!empty($opts['include_referer']) && !empty($_SERVER['HTTP_REFERER'])) {
-            $payload['referer'] = $_SERVER['HTTP_REFERER'];
+            $payload['referer'] = esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER']));
         }
 
         return $payload;

@@ -1,8 +1,8 @@
-=== xSeek AI Bot Tracking ===
+=== xSeek AEO Tracking ===
 Contributors: xseek
 Tags: ai, bots, analytics, seo, aeo
 Requires at least: 5.6
-Tested up to: 6.6
+Tested up to: 6.9
 Stable tag: 1.0.0
 Requires PHP: 7.0
 License: MIT
@@ -33,7 +33,7 @@ Bot patterns are based on xSeek’s bot database (see docs).
 Docs: xSeek docs: https://www.xseek.io/integrations/wordpress
 
 == Installation ==
-1. Upload `xseek-ai-bot-tracking.zip`
+1. Upload `xseek-aeo-tracking.zip`
 2. WordPress → Plugins → Add New → Upload Plugin → Activate
 3. Settings → xSeek AI Tracking
 4. Enable xSeek tracking (opt-in)
