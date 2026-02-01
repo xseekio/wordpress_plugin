@@ -265,6 +265,7 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
             'bingbot' => '/Bingbot(?!.*AI)/i',
             'bingpreview' => '/bingbot.*Chrome/i',
             'microsoftpreview' => '/MicrosoftPreview/i',
+            'mistralai-user' => '/MistralAI-User/i',
             'cohere-ai' => '/cohere-ai/i',
             'cohere-training-data-crawler' => '/cohere-training-data-crawler/i',
             'youbot' => '/YouBot/i',
