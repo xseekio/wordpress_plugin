@@ -120,7 +120,12 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
         $out = $current;
 
         $out['enabled']         = !empty($in['enabled']) ? 1 : 0;
-        $out['website_id']      = isset($in['website_id']) ? sanitize_text_field($in['website_id']) : '';
+        $raw_website_id = isset($in['website_id']) ? sanitize_text_field($in['website_id']) : '';
+        // Strip env-var prefix if user pastes "XSEEK_WEBSITE_ID=<uuid>" instead of just the ID
+        if (preg_match('/^XSEEK_WEBSITE_ID\s*=\s*(.+)$/i', $raw_website_id, $m)) {
+            $raw_website_id = trim($m[1]);
+        }
+        $out['website_id'] = $raw_website_id;
         $out['include_ip']      = !empty($in['include_ip']) ? 1 : 0;
         $out['include_referer'] = !empty($in['include_referer']) ? 1 : 0;
         $out['sample_rate']     = isset($in['sample_rate'])
@@ -167,6 +172,9 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
 
         $v = isset($opts[$key]) ? $opts[$key] : '';
         echo '<input type="text" class="regular-text" name="' . esc_attr($name) . '" value="' . esc_attr($v) . '">';
+        if ($key === 'website_id') {
+            echo '<p class="description">' . esc_html__('Enter only the UUID (e.g. 921d51da-889f-45b4-8b08-0d857f134e66), not the full XSEEK_WEBSITE_ID=… variable.', 'xseek-aeo-tracking') . '</p>';
+        }
     }
 
     public function render_settings() {
