@@ -257,6 +257,9 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
             'claude-web' => '/claude-web/i',
             'claude-user' => '/Claude-User/i',
             'claude-searchbot' => '/Claude-SearchBot/i',
+            // Anthropic's Claude Code CLI sends "claude-code/<version> (cli)".
+            // Match the prefix so we don't have to chase version bumps.
+            'claude-code' => '/claude-code\//i',
             'perplexitybot' => '/PerplexityBot/i',
             'perplexity-user' => '/Perplexity-User/i',
             'grokbot' => '/GrokBot(?!.*DeepSearch)/i',
