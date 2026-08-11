@@ -2,7 +2,7 @@
 /**
  * Plugin Name: xSeek AEO Tracking
  * Description: Server-side AI bot detection for WordPress. Tracks AI bot visits via xSeek’s API (bots don’t execute JavaScript).
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      xSeek
  * License:     MIT
  * Text Domain: xseek-aeo-tracking
@@ -470,8 +470,26 @@ final class XSEEK_AI_Bot_Tracking_Plugin {
     }
 
     private function ship($payload, $api_key) {
-        // Optionally flush the response first if supported (true async)
-        if (function_exists('fastcgi_finish_request')) { @fastcgi_finish_request(); }
+        // DO NOT call fastcgi_finish_request() here, and do not reintroduce it.
+        //
+        // This runs from capture_request_early(), which is hooked on
+        // 'plugins_loaded' at priority 0 — before WordPress has parsed the
+        // query, run the loop, or rendered a single byte of the template.
+        // fastcgi_finish_request() tells PHP-FPM the response is complete and
+        // closes the connection to the client. At that point the body is EMPTY,
+        // so the visitor received "200 OK" with no content, and WordPress then
+        // rendered the real page into a connection nobody was listening to.
+        //
+        // Reported by a customer on Kinsta, 2026-08: AI crawlers hitting an
+        // uncached page got a blank 200, the host's page cache stored that
+        // empty response, and it was then served to ordinary human visitors.
+        // Reproducible: with the plugin enabled a ChatGPT-User request returned
+        // an empty body; disabled, the same request returned the full page.
+        //
+        // It also never bought anything. send_http_nonblocking() already uses
+        // blocking => false with a 0.01s timeout, so the tracking POST never
+        // delayed the response in the first place. This was an optimisation for
+        // a cost that did not exist, paid for with blank pages.
         $this->send_http_nonblocking($payload, $api_key);
     }
 
