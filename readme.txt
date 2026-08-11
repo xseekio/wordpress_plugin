@@ -3,7 +3,7 @@ Contributors: xseek
 Tags: ai, bots, analytics, seo, aeo
 Requires at least: 5.6
 Tested up to: 6.9
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires PHP: 7.0
 License: MIT
 License URI: https://opensource.org/license/mit/
@@ -66,6 +66,13 @@ If you enable “Include IP address”, the plugin uses `X-Forwarded-For` (left-
 - Some hosts block outgoing HTTP requests; check your server/firewall rules if you never see events.
 
 == Changelog ==
+= 1.0.1 =
+* Fix: the plugin ended the HTTP response before WordPress rendered the page, so
+  AI crawlers received an empty "200 OK". Hosts with page caching could store
+  that empty response and serve it to ordinary visitors. Removed the
+  fastcgi_finish_request() call; tracking was already sent non-blocking, so
+  nothing is lost. Upgrade immediately and purge your page cache afterwards.
+
 = 1.0.0 =
 * Initial release: Server-side AI bot detection with xSeek API integration
 * Privacy-first design: Opt-in by default, bot-only tracking, metadata only
